@@ -1,5 +1,5 @@
-def registry = 'https://satishk.jfrog.io'
-def imageName = 'satishk.jfrog.io/satish-docker-local/sample_app'
+def registry = 'https://aashikraman.jfrog.io'
+def imageName = 'aashikraman.jfrog.io/aashik-docker-local/sample_app'
 def version   = '2.1.2'
 pipeline {
     agent {
@@ -28,10 +28,10 @@ environment {
 
         stage('SonarQube analysis') {
         environment {
-          scannerHome = tool 'satish-sonarqube-scanner'
+          scannerHome = tool 'aashikraman-sonarqube-scanner'
         }
             steps{
-            withSonarQubeEnv('satish-sonarqube-server') { // If you have configured more than one global server connection, you can specify its name
+            withSonarQubeEnv('aashikraman-sonarqube-server') { 
               sh "${scannerHome}/bin/sonar-scanner"
             }
             }
