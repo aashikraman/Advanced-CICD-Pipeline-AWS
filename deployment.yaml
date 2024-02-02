@@ -17,7 +17,7 @@ spec:
       - name: dockercred
       containers:
       - name:  sample-app
-        image: satishk.jfrog.io/satish-docker-local/sample_app:2.1.2
+        image: aashikraman.jfrog.io/aashik-docker-local/sample_app:2.1.2
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
