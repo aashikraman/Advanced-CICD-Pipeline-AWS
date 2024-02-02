@@ -39,7 +39,7 @@ resource "aws_internet_gateway" "igw" {
 
 # Create a Route Table
 resource "aws_route_table" "route" {
-    vpc_id = "${aws_vpc.project-vps.id}"
+    vpc_id = "${aws_vpc.project-vpc.id}"
 
 route {
     cidr_block = "0.0.0.0/0"
@@ -106,7 +106,7 @@ tags = {
 }
 
 # Create Jenkins Master and 2 Agent EC2 Instances
-resource "aws_instance" "JenkinsM-instance" {
+resource "aws_instance" "Jenkins-instance" {
   ami                         = "ami-0c7217cdde317cfec"
   instance_type               = "t2.micro"
   key_name                    = "DevOps"
@@ -117,4 +117,28 @@ resource "aws_instance" "JenkinsM-instance" {
 tags = {
   Name = element(var.Jenkins_tags, count.index)
 }
+}
+
+resource "aws_eks_cluster" "CICD-EKS" {
+  name     = "CICD-EKS"
+  role_arn = aws_iam_role.CICD.arn
+
+  vpc_config {
+    subnet_ids = [aws_subnet.project-vpc.id]
+  }
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.
+  # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.
+  depends_on = [
+    aws_iam_role_policy_attachment.CICD-AmazonEKSClusterPolicy,
+    aws_iam_role_policy_attachment.CICD-AmazonEKSVPCResourceController,
+  ]
+}
+
+output "endpoint" {
+  value = aws_eks_cluster.CICD-EKS.endpoint
+}
+
+output "kubeconfig-certificate-authority-data" {
+  value = aws_eks_cluster.CICD-EKS.certificate_authority[0].data
 }
